@@ -4,8 +4,11 @@ const http = require('http');
 const { Server } = require('socket.io');
 const server = http.createServer(app);
 const io = new Server(server);
+const cors = require('cors');
 
-
+app.use(cors({
+    origin: '*'
+}));
 
 const userSocketMap = {};
 

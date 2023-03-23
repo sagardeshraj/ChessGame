@@ -21,7 +21,6 @@ function GamePage() {
   const location = useLocation();
   let { color, clients, mySocketID,isCalling } = location.state;
   const { gameId } = useParams();
-  const navigate = useNavigate();
   const socketRef = useRef();
   const [fen, setFen] = useState("start");
   const [people, setPeople] = useState("start");
@@ -127,11 +126,11 @@ function GamePage() {
 
   const resign = () => {
     socketRef.current.emit("leave_room", gameId);
-    window.location.href = 'http://localhost:3000'
+    window.location.href =  `${process.env.REACT_APP_CLIENT_URL}`
   };
 
   const newGame = () => {
-    window.location.href = 'http://localhost:3000'
+    window.location.href = `${process.env.REACT_APP_CLIENT_URL}`
   };
 
   const onDrop = (sourceSquare, targetSquare) => {
