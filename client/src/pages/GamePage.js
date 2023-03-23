@@ -126,7 +126,7 @@ function GamePage() {
 
   const resign = () => {
     socketRef.current.emit("leave_room", gameId);
-    window.location.href =  `${process.env.REACT_APP_CLIENT_URL}`
+    window.location.href =  "https://chess-game-green.vercel.app/"
   };
 
   const newGame = () => {
