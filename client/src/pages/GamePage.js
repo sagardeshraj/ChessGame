@@ -130,7 +130,7 @@ function GamePage() {
   };
 
   const newGame = () => {
-    window.location.href = `${process.env.REACT_APP_CLIENT_URL}`
+    window.location.href = "https://chess-game-green.vercel.app/"
   };
 
   const onDrop = (sourceSquare, targetSquare) => {
