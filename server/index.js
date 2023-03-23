@@ -25,7 +25,6 @@ function getAllConnectedClients(gameId) {
 }
 
 io.on('connection', (socket) => {
-    console.log('connected with socketId',socket.id );
 
     
 
@@ -91,6 +90,11 @@ io.on('connection', (socket) => {
 
 
 });
+
+
+app.get("/xxx",(req,res)=>{
+    res.send("working")
+})
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
