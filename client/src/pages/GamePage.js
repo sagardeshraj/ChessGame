@@ -10,87 +10,90 @@ import { ImClipboard } from "react-icons/im";
 import { GiFlyingFlag } from "react-icons/gi";
 
 function GamePage() {
-
-  const third = useMediaQuery({ query: "(max-width: 1224px)" });
-  const second = useMediaQuery({ query: "(max-width: 1156px)" });
-  const first = useMediaQuery({ query: "(max-width: 466px)" });
-  const last = useMediaQuery({ query: "(max-width: 436px)" });
-  const final = useMediaQuery({ query: "(max-width: 416px)" });
-  const seffb = useMediaQuery({ query: "(max-width: 406px)" });
+  const v6 = useMediaQuery({ query: "(max-width: 1224px)" });
+  const v5 = useMediaQuery({ query: "(max-width: 1156px)" });
+  const v4 = useMediaQuery({ query: "(max-width: 466px)" });
+  const v3 = useMediaQuery({ query: "(max-width: 436px)" });
+  const v2 = useMediaQuery({ query: "(max-width: 416px)" });
+  const v1 = useMediaQuery({ query: "(max-width: 406px)" });
+  const v7 = useMediaQuery({ query: "(max-width: 392px)" });
+  const v8 = useMediaQuery({ query: "(max-width: 373px)" });
+  const v9 = useMediaQuery({ query: "(max-width: 355px)" });
 
   const location = useLocation();
-  let { color, clients, mySocketID,isCalling } = location.state;
+  let { color, clients, mySocketID, isCalling } = location.state;
   const { gameId } = useParams();
   const socketRef = useRef();
   const [fen, setFen] = useState("start");
   const [people, setPeople] = useState("start");
   const game = useRef(null);
   const [showNewgame, setShowNewGame] = useState(false);
-  const localStream = useRef(null)
-  const RemoteStream = useRef(null)
+  const localStream = useRef(null);
+  const RemoteStream = useRef(null);
   const peerInstance = useRef(null);
-  const captureAudioRef = useRef(null)
-  const moveAudioRef = useRef(null)
-  
-  
-
+  const captureAudioRef = useRef(null);
+  const moveAudioRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const peer = new Peer(mySocketID);
+    const peer = new Peer(mySocketID,{
+      host:'chess-game-f05y.onrender.com',
+      secure:true,
+      port:443
+    });
 
-    peer.on('call', (call) => {
-     const getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+    peer.on("call", (call) => {
+      const getUserMedia =
+        navigator.getUserMedia ||
+        navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia;
 
       getUserMedia({ video: true, audio: true }, (mediaStream) => {
         localStream.current.srcObject = mediaStream;
         localStream.current.play();
-        call.answer(mediaStream)
+        call.answer(mediaStream);
 
-        call.on('stream', (remoteStream) => {
+        call.on("stream", (remoteStream) => {
           RemoteStream.current.srcObject = remoteStream;
           RemoteStream.current.addEventListener("loadedmetadata", () => {
-              RemoteStream.current.play();
+            RemoteStream.current.play();
           });
         });
       });
-    })
+    });
 
     peerInstance.current = peer;
+  }, []);
 
-  }, [])
+  useEffect(() => {
+    if (isCalling) {
+      if (clients && clients.length === 2) {
+        var anotherClient = clients.filter((client) => {
+          return client.socketId !== mySocketID;
+        });
 
+        const getUserMedia =
+          navigator.getUserMedia ||
+          navigator.webkitGetUserMedia ||
+          navigator.mozGetUserMedia;
 
-  useEffect(()=>{
-   if(isCalling){
-    if (clients && clients.length === 2) {
-      
-      var anotherClient = clients.filter((client) => {
-        return client.socketId !== mySocketID;
-      });
+          getUserMedia({ video: true, audio: true }, (mediaStream) => {
+            localStream.current.srcObject = mediaStream;
+            localStream.current.play();
 
-     
-        const getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-    
-        getUserMedia({ video: true, audio: true }, (mediaStream) => {
-          localStream.current.srcObject = mediaStream;
-          localStream.current.play();
-    
-          const call = peerInstance.current.call(anotherClient[0].socketId, mediaStream)
+            const call = peerInstance.current.call(anotherClient[0].socketId,mediaStream);
 
-          call.on('stream', (remoteStream) => {
-            RemoteStream.current.srcObject = remoteStream;
-            RemoteStream.current.addEventListener("loadedmetadata", () => {
+            call.on("stream", (remoteStream) => {
+              RemoteStream.current.srcObject = remoteStream;
+              RemoteStream.current.addEventListener("loadedmetadata", () => {
                 RemoteStream.current.play();
+              });
             });
           });
 
-
-
-        });
+      }
     }
-   }
-  },[clients])
-
+  }, [clients]);
 
   useEffect(() => {
     game.current = new Chess();
@@ -126,11 +129,11 @@ function GamePage() {
 
   const resign = () => {
     socketRef.current.emit("leave_room", gameId);
-    window.location.href =  "https://chess-game-green.vercel.app/"
+    window.location.href = "https://chess-game-green.vercel.app";
   };
 
   const newGame = () => {
-    window.location.href = "https://chess-game-green.vercel.app/"
+    window.location.href = "https://chess-game-green.vercel.app";
   };
 
   const onDrop = (sourceSquare, targetSquare) => {
@@ -148,16 +151,13 @@ function GamePage() {
       targetSquare
     );
 
-
-    if(move){
-      if(move.flags.includes("c")){
+    if (move) {
+      if (move.flags.includes("c")) {
         captureAudioRef.current.play();
-      }
-      else{
+      } else {
         moveAudioRef.current.play();
       }
     }
-
   };
 
   const resetGame = () => {
@@ -176,12 +176,16 @@ function GamePage() {
     }
   }
 
-
-
   return (
     <div className="App">
       <div className="img">
-        <img src="/images/logo.png" alt="" />
+        <img
+          src="/images/logo.png"
+          alt=""
+          onClick={() => {
+            navigate("/");
+          }}
+        />
       </div>
       <div className="clipboard">
         <div className="div">
@@ -216,17 +220,23 @@ function GamePage() {
         <div className="left">
           <Chessboard
             boardWidth={
-              seffb
+              v9
+                ? 270
+                : v8
+                ? 290
+                : v7
+                ? 310
+                : v6
                 ? 330
-                : final
+                : v5
                 ? 340
-                : last
+                : v4
                 ? 350
-                : first
+                : v3
                 ? 370
-                : second
+                : v2
                 ? 400
-                : third
+                : v1
                 ? 500
                 : 550
             }
@@ -249,7 +259,7 @@ function GamePage() {
         <div className="right">
           <div className="wrapper">
             <div className="persons">
-              <video controls autoPlay id="me" ref={RemoteStream} ></video>
+              <video controls autoPlay id="me" ref={RemoteStream}></video>
             </div>
             <div className="persons">
               <video controls autoPlay id="him" muted ref={localStream}></video>
@@ -257,8 +267,16 @@ function GamePage() {
           </div>
         </div>
       </div>
-      <audio ref={captureAudioRef} src="/capture.mp3" style={{visibility:"hidden"}} />
-      <audio ref={moveAudioRef} src="/move-self.mp3" style={{visibility:"hidden"}} />
+      <audio
+        ref={captureAudioRef}
+        src="/capture.mp3"
+        style={{ visibility: "hidden" }}
+      />
+      <audio
+        ref={moveAudioRef}
+        src="/move-self.mp3"
+        style={{ visibility: "hidden" }}
+      />
     </div>
   );
 }

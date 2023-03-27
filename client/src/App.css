@@ -117,6 +117,8 @@ button:hover {
 .wrapper {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  
   /* grid-template-rows: 300px 300px; */
 }
 
@@ -183,7 +185,7 @@ video {
   z-index: 10000;
   background: white;
   border-radius: 5px;
-  padding: 10px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
   color: white;
@@ -347,4 +349,15 @@ video {
 }
 .resign:hover {
   background-color: rgb(217, 0, 0, 0.9) !important;
+}
+
+@media (max-width: 600px) {
+  .box {
+    padding: 30px;
+  }
+}
+@media (max-width: 420px) {
+  .box {
+    padding: 38px;
+  }
 }

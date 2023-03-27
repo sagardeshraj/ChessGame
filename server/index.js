@@ -3,13 +3,16 @@ const app = express();
 const http = require('http');
 const { Server } = require('socket.io');
 const server = http.createServer(app);
+const { ExpressPeerServer } = require("peer");
 const io = new Server(server);
-const cors = require('cors');
-require('dotenv').config()
 
-app.use(cors({
-    origin: '*'
-}));
+const peerServer = ExpressPeerServer(server, {
+	debug: true,
+	path: "/",
+
+});
+
+app.use("/peerjs", peerServer);
 
 const userSocketMap = {};
 
@@ -26,6 +29,7 @@ function getAllConnectedClients(gameId) {
 }
 
 io.on('connection', (socket) => {
+    console.log('connected with socketId',socket.id );
 
     
 
@@ -92,10 +96,5 @@ io.on('connection', (socket) => {
 
 });
 
-
-app.get("/xxx",(req,res)=>{
-    res.send("working")
-})
-
-const PORT = process.env.PORT || 6000;
+const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
