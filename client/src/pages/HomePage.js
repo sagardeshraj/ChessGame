@@ -111,7 +111,7 @@ function HomePage() {
 
   return (
     <div className="homePage">
-      <img src='/images/three.jpg' alt="" />
+      <img src='/hero.webp' alt="" />
       <div className="box">
         <h4 className="mainLabel">Paste invitation Game ID</h4>
         <div className="inputGroup">
