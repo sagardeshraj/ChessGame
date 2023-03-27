@@ -3,16 +3,8 @@ const app = express();
 const http = require('http');
 const { Server } = require('socket.io');
 const server = http.createServer(app);
-const { ExpressPeerServer } = require("peer");
 const io = new Server(server);
 
-const peerServer = ExpressPeerServer(server, {
-	debug: true,
-	path: "/",
-
-});
-
-app.use("/peerjs", peerServer);
 
 const userSocketMap = {};
 
