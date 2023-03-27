@@ -37,7 +37,7 @@ function GamePage() {
 
   useEffect(() => {
     const peer = new Peer(mySocketID,{
-      host:'chess-game-f05y.onrender.com',
+      host:'ill-rose-tick-tie.cyclic.app',
       secure:true,
       port:443
     });
