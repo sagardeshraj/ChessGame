@@ -93,7 +93,7 @@ function HomePage() {
       toast.error("GAME ID & username is required");
       return;
     }
-    if (gameId) {
+    if (gameId < 6 ) {
       toast.error("GAME ID must be atleast 6 figures long");
       return;
     }
