@@ -40,7 +40,7 @@ function GamePage() {
       host:'ill-rose-tick-tie.cyclic.app/peerjs',
       path:'/peerjs',
       secure:true,
-      port:3000,
+      port:443,
     });
 
     peer.on("call", (call) => {
