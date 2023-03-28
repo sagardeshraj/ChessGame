@@ -40,7 +40,7 @@ function GamePage() {
       host: "handsome-colt-loincloth.cyclic.app",
       path: "/call",
       secure: true,
-      port: 9000,
+      port: 443,
       config: {
         iceServers: [
           {
@@ -284,10 +284,10 @@ function GamePage() {
         <div className="right">
           <div className="wrapper">
             <div className="persons">
-              <video controls autoPlay id="me" ref={RemoteStream}></video>
+              <video controls autoPlay id="me" ref={localStream}></video>
             </div>
             <div className="persons">
-              <video controls autoPlay id="him" muted ref={localStream}></video>
+              <video controls autoPlay id="him" muted ref={RemoteStream}></video>
             </div>
           </div>
         </div>

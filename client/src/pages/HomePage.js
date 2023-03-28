@@ -24,7 +24,7 @@ function HomePage() {
 
       function handleErrors(e) {
         console.log("socket error", e);
-        toast.error("Socket connection failed, try again later.");  
+        toast.error("Connection failed! Please refresh the page");  
       }
 
       socketRef.current.on("status", (num) => {
@@ -91,6 +91,10 @@ function HomePage() {
   const joinGame = () => {
     if (!gameId || !username) {
       toast.error("GAME ID & username is required");
+      return;
+    }
+    if (gameId) {
+      toast.error("GAME ID must be atleast 6 figures long");
       return;
     }
 
