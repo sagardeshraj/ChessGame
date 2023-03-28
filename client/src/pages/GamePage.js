@@ -36,11 +36,33 @@ function GamePage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const peer = new Peer(mySocketID,{
-      host:'handsome-colt-loincloth.cyclic.app',
-      path:'/call',
-      secure:true,
-      port:443,
+    const peer = new Peer(mySocketID, {
+      host: "handsome-colt-loincloth.cyclic.app",
+      path: "/call",
+      secure: true,
+      port: 443,
+      config: {
+        iceServers: [
+          {
+            urls: "stun:relay.metered.ca:80",
+          },
+          {
+            urls: "turn:relay.metered.ca:80",
+            username: "4935b824b9944fa19ccfee14",
+            credential: "O7e3DvmO44qGTk6k",
+          },
+          {
+            urls: "turn:relay.metered.ca:443",
+            username: "4935b824b9944fa19ccfee14",
+            credential: "O7e3DvmO44qGTk6k",
+          },
+          {
+            urls: "turn:relay.metered.ca:443?transport=tcp",
+            username: "4935b824b9944fa19ccfee14",
+            credential: "O7e3DvmO44qGTk6k",
+          },
+        ],
+      },
     });
 
     peer.on("call", (call) => {
@@ -78,20 +100,22 @@ function GamePage() {
           navigator.webkitGetUserMedia ||
           navigator.mozGetUserMedia;
 
-          getUserMedia({ video: true, audio: true }, (mediaStream) => {
-            localStream.current.srcObject = mediaStream;
-            localStream.current.play();
+        getUserMedia({ video: true, audio: true }, (mediaStream) => {
+          localStream.current.srcObject = mediaStream;
+          localStream.current.play();
 
-            const call = peerInstance.current.call(anotherClient[0].socketId,mediaStream);
+          const call = peerInstance.current.call(
+            anotherClient[0].socketId,
+            mediaStream
+          );
 
-            call.on("stream", (remoteStream) => {
-              RemoteStream.current.srcObject = remoteStream;
-              RemoteStream.current.addEventListener("loadedmetadata", () => {
-                RemoteStream.current.play();
-              });
+          call.on("stream", (remoteStream) => {
+            RemoteStream.current.srcObject = remoteStream;
+            RemoteStream.current.addEventListener("loadedmetadata", () => {
+              RemoteStream.current.play();
             });
           });
-
+        });
       }
     }
   }, [clients]);
