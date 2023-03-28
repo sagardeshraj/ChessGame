@@ -39,7 +39,7 @@ function GamePage() {
     const peer = new Peer(mySocketID,{
       host:'ill-rose-tick-tie.cyclic.app',
       secure:true,
-      port:443
+      port:3000
     });
 
     peer.on("call", (call) => {
