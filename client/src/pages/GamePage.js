@@ -38,9 +38,8 @@ function GamePage() {
   useEffect(() => {
     const peer = new Peer(mySocketID,{
       host:'ill-rose-tick-tie.cyclic.app/peerjs',
-      path:'/peerjs',
+      path:'/',
       secure:true,
-      port:443,
     });
 
     peer.on("call", (call) => {
