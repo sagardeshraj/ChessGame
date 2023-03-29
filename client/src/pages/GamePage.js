@@ -85,9 +85,14 @@ function GamePage() {
         });
       });
     });
+    peer.on("error", (error) =>{
+      console.log('er',error);
+    } );
+
+
 
     peerInstance.current = peer;
-  }, []);
+  }, [mySocketID]);
 
   useEffect(() => {
     if (isCalling) {

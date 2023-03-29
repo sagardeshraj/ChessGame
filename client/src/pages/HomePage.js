@@ -32,7 +32,7 @@ function HomePage() {
       });
 
       socketRef.current.on("joined", ({ clients, username, socketId }) => {
-        if (username !== username) {
+        if (username) {
           toast.success(`${username} joined the Game.`);
         }
         setClients(clients);
@@ -93,7 +93,7 @@ function HomePage() {
       toast.error("GAME ID & username is required");
       return;
     }
-    if (gameId < 6 ) {
+    if (gameId.length < 6 ) {
       toast.error("GAME ID must be atleast 6 figures long");
       return;
     }
