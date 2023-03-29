@@ -25,7 +25,7 @@ function GamePage() {
   const { gameId } = useParams();
   const socketRef = useRef();
   const [fen, setFen] = useState("start");
-  const [people, setPeople] = useState("start");
+  const [people, setPeople] = useState();
   const game = useRef(null);
   const [showNewgame, setShowNewGame] = useState(false);
   const localStream = useRef(null);
@@ -34,7 +34,20 @@ function GamePage() {
   const captureAudioRef = useRef(null);
   const moveAudioRef = useRef(null);
   const navigate = useNavigate();
+  const [myLocalStream, setMyLocalStream] = useState(null);
 
+  useEffect(() => {
+    async function xyz() {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+      localStream.current.srcObject = stream;
+      localStream.current.play();
+      setMyLocalStream(stream);
+    }
+    xyz();
+  }, []);
   useEffect(() => {
     const peer = new Peer(mySocketID, {
       host: "handsome-colt-loincloth.cyclic.app",
@@ -101,14 +114,10 @@ function GamePage() {
           navigator.mozGetUserMedia;
 
         getUserMedia({ video: true, audio: true }, (mediaStream) => {
-          localStream.current.srcObject = mediaStream;
-          localStream.current.play();
-
           const call = peerInstance.current.call(
             anotherClient[0].socketId,
-            mediaStream
+            stream
           );
-
           call.on("stream", (remoteStream) => {
             RemoteStream.current.srcObject = remoteStream;
             RemoteStream.current.addEventListener("loadedmetadata", () => {
@@ -116,6 +125,7 @@ function GamePage() {
             });
           });
         });
+
       }
     }
   }, [clients]);
@@ -284,10 +294,10 @@ function GamePage() {
         <div className="right">
           <div className="wrapper">
             <div className="persons">
-              <video controls autoPlay id="me" ref={localStream}></video>
+              <video autoPlay id="me" controls muted ref={localStream}></video>
             </div>
             <div className="persons">
-              <video controls autoPlay id="him" muted ref={RemoteStream}></video>
+              <video autoPlay id="him" ref={RemoteStream}></video>
             </div>
           </div>
         </div>
