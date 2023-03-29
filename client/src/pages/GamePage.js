@@ -51,7 +51,7 @@ function GamePage() {
       host: "handsome-colt-loincloth.cyclic.app",
       path: "/call",
       secure: true,
-      port: 9000,
+      port: 443,
       config: {
         iceServers: [
           {
