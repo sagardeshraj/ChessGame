@@ -56,14 +56,12 @@ function HomePage() {
     e.preventDefault();
     const id = uuidV4();
     setGameId(id);
-    toast.success("Created a new Game Id");
   };
 
   const x = () => {
     if (status === 1) {
       let isCalling = false
       let color = colorRef.current;
-      console.log('cl',clients);
       setTimeout(() => {
         navigate(`/game/${gameId}`, {
           state: { username, color, clients, mySocketID, isCalling },
@@ -100,7 +98,7 @@ function HomePage() {
 
     socketRef.current.emit("join", {
       gameId,
-      username: username,
+      username,
     });
   };
 

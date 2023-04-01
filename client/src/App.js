@@ -21,7 +21,7 @@ function App() {
         ></Toaster>
       </div>
       <Routes>
-        <Route path="/" element={<HomePage />}></Route>
+        <Route path="/" exact element={<HomePage />}></Route>
         <Route path="/game/:gameId" element={<GamePage />}></Route>
         <Route path="*" element={<NoMatch />}></Route>
       </Routes>

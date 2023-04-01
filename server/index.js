@@ -4,7 +4,11 @@ const http = require('http');
 const { Server } = require('socket.io');
 const server = http.createServer(app);
 const io = new Server(server);
+var cors = require('cors')
+app.use(cors())
 
+ 
+ 
 
 const userSocketMap = {};
 
@@ -23,7 +27,14 @@ function getAllConnectedClients(gameId) {
 io.on('connection', (socket) => {
     console.log('connected with socketId',socket.id );
 
-    
+	socket.on("callUser", (data) => {
+		io.to(data.userToCall).emit("giveSignal", { signal: data.signalData, from : data.mysocketId })
+
+	})
+
+	socket.on("answerCall", (data) => {
+		io.to(data.to).emit("callAccepted", data.signal)
+	})
 
     socket.on("join", ({ gameId, username }) => {
         userSocketMap[socket.id] = username;
@@ -54,10 +65,16 @@ io.on('connection', (socket) => {
             });
         });
 
-        io.in(gameId).emit("all", clients)
 
+        
     });
 
+
+
+
+    socket.on("showResign",(clients, gameId)=>{
+        socket.to(gameId).emit('setPeople', clients );
+    })
     socket.on("leave_room",(gameId)=>{
         const clients = getAllConnectedClients(gameId);
         socket.leave(gameId);
@@ -86,7 +103,9 @@ io.on('connection', (socket) => {
     });
 
 
+
+
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 9000;
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`));

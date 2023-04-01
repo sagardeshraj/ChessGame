@@ -11,7 +11,7 @@ const options = {
 
 let socketInstance;
 
- export const getSocketInstance= async()=> {
+ export const getSocketInstance= ()=> {
     if (!socketInstance) {
         socketInstance = io(process.env.REACT_APP_BACKEND_URL,options);
     }

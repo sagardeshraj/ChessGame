@@ -118,7 +118,7 @@ button:hover {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  
+
   /* grid-template-rows: 300px 300px; */
 }
 
@@ -360,4 +360,39 @@ video {
   .box {
     padding: 38px;
   }
+}
+
+.answercall {
+  padding: 8px;
+  background: red;
+  text-align: center;
+  font-weight: 600;
+  color: black;
+  font-size: 16px;
+  transition: all .2s;
+}
+.answercall svg{
+  position: relative;
+  top: 4px;
+  fill: black;
+}
+.answercall:hover {
+  background-color: rgba(205, 1, 1, 0.8);
+}
+.acceptcall {
+  padding: 8px;
+  background: rgb(0, 191, 0);
+  text-align: center;
+  font-weight: 600;
+  color: black;
+  font-size: 16px;
+  transition: all .2s;
+}
+.acceptcall svg {
+  position: relative;
+  top: 4px;
+  fill: black;
+}
+.acceptcall:hover {
+  background-color: rgba(29, 159, 0, 0.8);
 }

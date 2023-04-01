@@ -1,161 +1,154 @@
 import { Chessboard } from "react-chessboard";
 import { Chess } from "chess.js";
 import { useEffect, useRef, useState } from "react";
-import Peer from "peerjs";
+import Peer from "simple-peer";
 import { useMediaQuery } from "react-responsive";
 import { getSocketInstance } from "../socket";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { ImClipboard } from "react-icons/im";
 import { GiFlyingFlag } from "react-icons/gi";
+import { MdVideocam } from "react-icons/md";
 
 function GamePage() {
-  const v6 = useMediaQuery({ query: "(max-width: 1224px)" });
-  const v5 = useMediaQuery({ query: "(max-width: 1156px)" });
-  const v4 = useMediaQuery({ query: "(max-width: 466px)" });
-  const v3 = useMediaQuery({ query: "(max-width: 436px)" });
-  const v2 = useMediaQuery({ query: "(max-width: 416px)" });
   const v1 = useMediaQuery({ query: "(max-width: 406px)" });
+  const v2 = useMediaQuery({ query: "(max-width: 416px)" });
+  const v3 = useMediaQuery({ query: "(max-width: 436px)" });
+  const v4 = useMediaQuery({ query: "(max-width: 466px)" });
+  const v5 = useMediaQuery({ query: "(max-width: 1156px)" });
+  const v6 = useMediaQuery({ query: "(max-width: 1224px)" });
   const v7 = useMediaQuery({ query: "(max-width: 392px)" });
   const v8 = useMediaQuery({ query: "(max-width: 373px)" });
   const v9 = useMediaQuery({ query: "(max-width: 355px)" });
 
+  const socketInstance = getSocketInstance();
   const location = useLocation();
-  let { color, clients, mySocketID, isCalling } = location.state;
+  const navigate = useNavigate();
   const { gameId } = useParams();
-  const socketRef = useRef();
-  const [fen, setFen] = useState("start");
-  const [people, setPeople] = useState();
+  let { color, clients, mySocketID } = location.state;
   const game = useRef(null);
-  const [showNewgame, setShowNewGame] = useState(false);
   const localStream = useRef(null);
-  const RemoteStream = useRef(null);
+  const remoteStream = useRef(null);
   const peerInstance = useRef(null);
   const captureAudioRef = useRef(null);
   const moveAudioRef = useRef(null);
-  const navigate = useNavigate();
+  const [people, setPeople] = useState([]);
+  const [fen, setFen] = useState("start");
+  const [showNewgame, setShowNewGame] = useState(false);
+  const [stream, setStream] = useState(null);
+  const [callerSignal, setCallerSignal] = useState(null);
+  const [callingPerson, setSetCallingPerson] = useState(null);
+  const [showCallingButton, setShowCallingButton] = useState(false);
+  const [showStartButton, setShowStartButton] = useState(false);
+  const hideredButtonref = useRef();
 
   useEffect(() => {
-    async function xyz() {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: true })
+      .then((stream) => {
+        setStream(stream);
+        localStream.current.srcObject = stream;
       });
-      localStream.current.srcObject = stream;
-      localStream.current.play();
-    }
-    xyz();
+
+    socketInstance.on("giveSignal", (data) => {
+      setShowCallingButton(true);
+      setCallerSignal(data.signal);
+      setSetCallingPerson(data.from);
+    });
   }, []);
-  useEffect(() => {
-    const peer = new Peer(mySocketID, {
-      host: "handsome-colt-loincloth.cyclic.app",
-      path: "/call",
-      secure: true,
-      port: 443,
-      config: {
-        iceServers: [
-          {
-            urls: "stun:relay.metered.ca:80",
-          },
-          {
-            urls: "turn:relay.metered.ca:80",
-            username: "4935b824b9944fa19ccfee14",
-            credential: "O7e3DvmO44qGTk6k",
-          },
-          {
-            urls: "turn:relay.metered.ca:443",
-            username: "4935b824b9944fa19ccfee14",
-            credential: "O7e3DvmO44qGTk6k",
-          },
-          {
-            urls: "turn:relay.metered.ca:443?transport=tcp",
-            username: "4935b824b9944fa19ccfee14",
-            credential: "O7e3DvmO44qGTk6k",
-          },
-        ],
-      },
+
+  const answerCall = () => {
+    const peer = new Peer({
+      initiator: false,
+      trickle: false,
+      stream: stream,
     });
 
-    peer.on("call", (call) => {
-      call.answer(localStream.current.srcObject);
-      call.on("stream", (remoteStream) => {
-        RemoteStream.current.srcObject = remoteStream;
-        RemoteStream.current.addEventListener("loadedmetadata", () => {
-          RemoteStream.current.play();
-        });
+    peer.on("signal", (data) => {
+      socketInstance.emit("answerCall", { signal: data, to: callingPerson });
+    });
+
+    peer.on("stream", (stream) => {
+      remoteStream.current.srcObject = stream;
+      remoteStream.current.addEventListener("loadedmetadata", () => {
+        remoteStream.current.play();
       });
     });
-    peer.on("error", (error) =>{
-      console.log('er',error);
-    } );
 
-
-
+    console.log("peer", peer);
+    peer.signal(callerSignal);
     peerInstance.current = peer;
-  }, [mySocketID]);
+    setShowCallingButton(false);
+  };
 
   useEffect(() => {
-    if (isCalling) {
-      if (clients && clients.length === 2) {
-        var anotherClient = clients.filter((client) => {
-          return client.socketId !== mySocketID;
-        });
-
-        const getUserMedia =
-          navigator.getUserMedia ||
-          navigator.webkitGetUserMedia ||
-          navigator.mozGetUserMedia;
-
-        getUserMedia({ video: true, audio: true }, (mediaStream) => {
-          const call = peerInstance.current.call(
-            anotherClient[0].socketId,
-            mediaStream
-          );
-          call.on("stream", (remoteStream) => {
-            RemoteStream.current.srcObject = remoteStream;
-            RemoteStream.current.addEventListener("loadedmetadata", () => {
-              RemoteStream.current.play();
-            });
-          });
-        });
-      }
+    if (clients && clients.length === 2 && mySocketID) {
+      setShowStartButton(true);
+      socketInstance.emit('showResign', clients , gameId )
     }
-  }, [clients,isCalling,mySocketID]);
+
+    socketInstance.on('setPeople', (people)=>{
+      setPeople(people);
+    } )
+
+
+
+  }, [location.state]);
+
+  const makeCall = () => {
+    var anotherClient = clients.filter((client) => {
+      return client.socketId !== mySocketID;
+    });
+    const peer = new Peer({
+      initiator: true,
+      trickle: false,
+      stream: stream,
+    });
+    peer.on("signal", (data) => {
+      socketInstance.emit("callUser", {
+        userToCall: anotherClient[0].socketId,
+        signalData: data,
+        mysocketId: mySocketID,
+      });
+    });
+
+    peer.on("stream", (stream) => {
+      remoteStream.current.srcObject = stream;
+      remoteStream.current.addEventListener("loadedmetadata", () => {
+        remoteStream.current.play();
+      });
+    });
+
+    socketInstance.on("callAccepted", (signal) => {
+      peer.signal(signal);
+      peerInstance.current = peer;
+    });
+    hideredButtonref.current.style.display = "none";
+  };
 
   useEffect(() => {
     game.current = new Chess();
   }, []);
 
   useEffect(() => {
-    const init = async () => {
-      socketRef.current = await getSocketInstance();
-
-      socketRef.current.on(
-        "receiving move",
-        (fen, sourceSquare, targetSquare) => {
-          setFen(fen);
-          game.current.move({
-            from: sourceSquare,
-            to: targetSquare,
-          });
-        }
-      );
-
-      socketRef.current.on("all", (clients) => {
-        setPeople(clients);
+    socketInstance.on("receiving move", (fen, sourceSquare, targetSquare) => {
+      setFen(fen);
+      game.current.move({
+        from: sourceSquare,
+        to: targetSquare,
       });
+    });
 
-      socketRef.current.on("leaving_guys", (clients) => {
-        toast.success("Other player Resigned");
-        setPeople(clients);
-        setShowNewGame(true);
-      });
-    };
-    init();
+    socketInstance.on("leaving_guys", (clients) => {
+      toast.success("Other player Resigned");
+      setPeople(clients);
+      clients = null;
+      setShowNewGame(true);
+    });
   }, []);
 
   const resign = () => {
-    socketRef.current.emit("leave_room", gameId);
+    socketInstance.emit("leave_room", gameId);
     window.location.href = "https://chess-game-green.vercel.app";
   };
 
@@ -170,7 +163,7 @@ function GamePage() {
     });
     if (move === null) return;
     setFen(game.current.fen());
-    socketRef.current.emit(
+    socketInstance.emit(
       "new move",
       game.current.fen(),
       gameId,
@@ -221,19 +214,16 @@ function GamePage() {
             {" "}
             <ImClipboard size={16} /> Copy to Clip-board
           </button>
-          {(people && people.length && people.length === 2) ||
-          (clients && clients.length && clients.length === 2) ? (
+          {(clients && clients.length && clients.length === 2) ||
+          (people && people.length && people.length === 2) ? (
             <button
               className="resign"
               style={{ display: `${showNewgame && "none"}` }}
               onClick={resign}
             >
-              {" "}
               <GiFlyingFlag size={16} /> Resign
             </button>
-          ) : (
-            ""
-          )}
+          ) : null}
           {showNewgame && (
             <button className="new_game" onClick={newGame}>
               {" "}
@@ -289,7 +279,21 @@ function GamePage() {
               <video autoPlay id="me" muted ref={localStream}></video>
             </div>
             <div className="persons">
-              <video autoPlay id="him" controls ref={RemoteStream}></video>
+              <video id="him" controls ref={remoteStream}></video>
+              {showStartButton && (
+                <div
+                  className="answercall"
+                  ref={hideredButtonref}
+                  onClick={makeCall}
+                >
+                   <MdVideocam size={16} /> start call  
+                </div>
+              )}
+              {showCallingButton && (
+                <div className="acceptcall" onClick={answerCall}>
+                 <MdVideocam size={16} /> accept call
+                </div>
+              )}
             </div>
           </div>
         </div>
