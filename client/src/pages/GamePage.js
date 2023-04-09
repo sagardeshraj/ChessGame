@@ -149,11 +149,11 @@ function GamePage() {
 
   const resign = () => {
     socketInstance.emit("leave_room", gameId);
-    window.location.href = "https://chess-game-green.vercel.app";
+    window.location.href = "https://chess-game-wheat.vercel.app";
   };
 
   const newGame = () => {
-    window.location.href = "https://chess-game-green.vercel.app";
+    window.location.href = "https://chess-game-wheat.vercel.app";
   };
 
   const onDrop = (sourceSquare, targetSquare) => {

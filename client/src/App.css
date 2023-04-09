@@ -349,6 +349,7 @@ video {
 }
 .resign:hover {
   background-color: rgb(217, 0, 0, 0.9) !important;
+  cursor: pointer;
 }
 
 @media (max-width: 600px) {
@@ -378,6 +379,7 @@ video {
 }
 .answercall:hover {
   background-color: rgba(205, 1, 1, 0.8);
+  cursor: pointer;
 }
 .acceptcall {
   padding: 8px;
@@ -395,4 +397,5 @@ video {
 }
 .acceptcall:hover {
   background-color: rgba(29, 159, 0, 0.8);
+  cursor: pointer;
 }
