@@ -24,7 +24,7 @@ function HomePage() {
 
       function handleErrors(e) {
         console.log("socket error", e);
-        toast.error("Connection failed! Please refresh the page");  
+        toast.error("It will take 5-10 sec to start the server initially, Please refresh then!");  
       }
 
       socketRef.current.on("status", (num) => {
